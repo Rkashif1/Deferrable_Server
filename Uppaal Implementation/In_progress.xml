@@ -4,15 +4,25 @@
 	<declaration>// Global Declarations
 bool aperiodicTaskAvailable = false; // Flag for aperiodic task availability
 
-// Instantiate templates
-DeferrableServer ds = DeferrableServer();
-PeriodicTask pt = PeriodicTask();
-AperiodicTask at = AperiodicTask();
 
 // Channels for synchronization
 chan serve, start, complete;
 
-system ds, pt, at;
+clock systemClock;
+
+// Initial values for clocks
+int systemClock &gt;= 0;
+
+// Parameters for templates
+const int executionTime1 = 20; // Example value for execution time of PeriodicTask
+const int period1 = 50; // Example value for period of PeriodicTask
+const int executionTime2 = 30; // Example value for execution time of AperiodicTask
+
+
+clock t;
+param int executionTime;
+
+param int period;
 </declaration>
 	<template>
 		<name x="5" y="5">Defferable_Server</name>
@@ -35,7 +45,8 @@ const int period = 50; // Server period
 			<source ref="id0"/>
 			<target ref="id2"/>
 			<label kind="guard" x="-110" y="178">t == period</label>
-			<label kind="assignment" x="-161" y="221">capacity = maxCapacity; t = 0;</label>
+			<label kind="assignment" x="-161" y="221">capacity = maxCapacity
+ t = 0</label>
 			<nail x="-187" y="195"/>
 		</transition>
 		<transition id="id4">
@@ -58,15 +69,12 @@ const int period = 50; // Server period
 			<source ref="id0"/>
 			<target ref="id1"/>
 			<label kind="guard" x="110" y="-25">capacity &gt; 0 &amp;&amp; aperiodicTaskAvailable</label>
-			<label kind="assignment" x="178" y="0">capacity -= 1; t = 0;</label>
+			<label kind="assignment" x="178" y="0">capacity -= 1
+ t = 0</label>
 		</transition>
 	</template>
 	<template>
 		<name>Periodic_Task</name>
-		<declaration>clock t;
-param int executionTime;
-param int period;
-</declaration>
 		<location id="id8" x="-263" y="-17">
 			<name x="-288" y="0">Waiting</name>
 		</location>
@@ -90,8 +98,7 @@ param int period;
 	</template>
 	<template>
 		<name>Aperiodic_Task</name>
-		<declaration>clock t;
-param int executionTime;
+		<declaration>
 </declaration>
 		<location id="id12" x="-340" y="-17">
 			<name x="-365" y="0">Waiting</name>
@@ -114,16 +121,7 @@ param int executionTime;
 			<label kind="assignment" x="-195" y="-17">aperiodicTaskAvailable = false</label>
 		</transition>
 	</template>
-	<system> system DeferrableServer, PeriodicTask, AperiodicTask;
-clock systemClock;
-
-// Initial values for clocks
-init systemClock := 0;
-
-// Parameters for templates
-const int executionTime1 = 20; // Example value for execution time of PeriodicTask
-const int period1 = 50; // Example value for period of PeriodicTask
-const int executionTime2 = 30; // Example value for execution time of AperiodicTask
+	<system> system Defferable_Server, Periodic_Task, Aperiodic_Task;
 </system>
 	<queries>
 		<query>
