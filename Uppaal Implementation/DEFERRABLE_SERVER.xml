@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.6//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_6.dtd'>
+<nta>
+	<declaration>chan arrival, serve;
+const int period = 5;
+const int execution_time = 2;
+const int aperiodic_task_time = 1;
+const int T_s = 10;
+const int C_s = 5;
+
+clock x;
+bool urgent_task = false;</declaration>
+	<template>
+		<name x="5" y="5">DeferrableServer</name>
+		<declaration>int capacity = C_s;</declaration>
+		<location id="id0" x="-110" y="59">
+			<name x="-120" y="25">Idle</name>
+		</location>
+		<location id="id1" x="586" y="59">
+			<name x="576" y="25">Execution</name>
+		</location>
+		<location id="id2" x="221" y="280">
+			<name x="211" y="246">Replenish</name>
+		</location>
+		<init ref="id0"/>
+		<transition id="id3">
+			<source ref="id0"/>
+			<target ref="id2"/>
+			<label kind="guard" x="-93" y="323">x &gt;= T_s</label>
+			<label kind="assignment" x="-144" y="391">x = 0</label>
+			<nail x="-110" y="382"/>
+		</transition>
+		<transition id="id4">
+			<source ref="id1"/>
+			<target ref="id0"/>
+			<label kind="guard" x="204" y="-161">x &gt;= aperiodic_task_time</label>
+			<label kind="synchronisation" x="212" y="-119">serve!</label>
+			<label kind="assignment" x="212" y="-93">x = 0</label>
+			<nail x="238" y="-136"/>
+		</transition>
+		<transition id="id5">
+			<source ref="id2"/>
+			<target ref="id0"/>
+			<label kind="assignment" x="25" y="144">capacity = C_s</label>
+		</transition>
+		<transition id="id6">
+			<source ref="id0"/>
+			<target ref="id1"/>
+			<label kind="guard" x="110" y="25">capacity &gt; 0 &amp;&amp; !urgent_task &amp;&amp; x &lt; T_s</label>
+			<label kind="synchronisation" x="204" y="51">arrival ?</label>
+			<label kind="assignment" x="144" y="76">capacity -= aperiodic_task_time</label>
+		</transition>
+	</template>
+	<template>
+		<name>PeriodicTask</name>
+		<declaration>
+const int executionTime = 30; // Example execution time of the periodic task
+</declaration>
+		<location id="id7" x="-262" y="-17">
+			<name x="-297" y="0">Idle</name>
+		</location>
+		<location id="id8" x="306" y="-25">
+			<name x="289" y="-17">Execution</name>
+		</location>
+		<init ref="id7"/>
+		<transition id="id9">
+			<source ref="id8"/>
+			<target ref="id7"/>
+			<label kind="guard" x="-76" y="-221">x &gt;= execution_time</label>
+			<nail x="17" y="-187"/>
+		</transition>
+		<transition id="id10">
+			<source ref="id7"/>
+			<target ref="id8"/>
+			<label kind="guard" x="-34" y="-51">x &gt;= period</label>
+			<label kind="assignment" x="-17" y="0">x = 0</label>
+		</transition>
+	</template>
+	<template>
+		<name>AperiodicTask</name>
+		<declaration>const int aperiodicExecutionTime = 20; // Example execution time of the aperiodic task
+</declaration>
+		<location id="id11" x="-263" y="8">
+			<name x="-322" y="17">Idle</name>
+		</location>
+		<location id="id12" x="323" y="0">
+			<name x="314" y="-34">Execution</name>
+		</location>
+		<init ref="id11"/>
+		<transition id="id13">
+			<source ref="id12"/>
+			<target ref="id11"/>
+			<label kind="guard" x="-76" y="-178">x &gt;= execution_time</label>
+			<label kind="synchronisation" x="-17" y="-144">serve?</label>
+			<nail x="8" y="-153"/>
+		</transition>
+		<transition id="id14">
+			<source ref="id11"/>
+			<target ref="id12"/>
+			<label kind="synchronisation" x="-8" y="-8">arrival!</label>
+		</transition>
+	</template>
+	<system>
+
+system DeferrableServer,PeriodicTask,AperiodicTask ;</system>
+	<queries>
+		<query>
+			<formula>A[] not deadlock
+			</formula>
+			<comment/>
+			<result outcome="success" type="quality" timestamp="2024-06-18 21:05:12 +0200">
+			</result>
+		</query>
+	</queries>
+</nta>
